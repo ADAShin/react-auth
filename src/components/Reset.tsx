@@ -4,6 +4,7 @@ import apiClient from '../service/api/apiClient';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { Helmet } from 'react-helmet-async';
 
 const resetPasswordFormSchema = z
   .object({
@@ -50,50 +51,55 @@ const Reset: FC = () => {
   };
 
   return (
-    <main className="form-signin">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <h1 className="h3 mb-3 fw-normal">Reset your password</h1>
+    <>
+      <Helmet>
+        <title>Sample | Reset Password</title>
+      </Helmet>
+      <main className="form-signin">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <h1 className="h3 mb-3 fw-normal">Reset your password</h1>
 
-        <div className="form-floating mb-3">
-          <input
-            type="password"
-            className={
-              errors.password ? 'form-control is-invalid' : 'form-control'
-            }
-            id="floatingPassword"
-            placeholder="Password"
-            {...register('password')}
-          />
-          <label htmlFor="floatingPassword">Password</label>
-          {errors.password?.message && (
-            <div className="invalid-feedback">{errors.password.message}</div>
-          )}
-        </div>
-        <div className="form-floating mb-3">
-          <input
-            type="password"
-            className={
-              errors.passwordConfirm
-                ? 'form-control is-invalid'
-                : 'form-control'
-            }
-            id="floatingPasswordConfirm"
-            placeholder="Password Confirm"
-            {...register('passwordConfirm')}
-          />
-          <label htmlFor="floatingPasswordConfirm">Password Confirm</label>
-          {errors.passwordConfirm?.message && (
-            <div className="invalid-feedback">
-              {errors.passwordConfirm.message}
-            </div>
-          )}
-        </div>
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className={
+                errors.password ? 'form-control is-invalid' : 'form-control'
+              }
+              id="floatingPassword"
+              placeholder="Password"
+              {...register('password')}
+            />
+            <label htmlFor="floatingPassword">Password</label>
+            {errors.password?.message && (
+              <div className="invalid-feedback">{errors.password.message}</div>
+            )}
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className={
+                errors.passwordConfirm
+                  ? 'form-control is-invalid'
+                  : 'form-control'
+              }
+              id="floatingPasswordConfirm"
+              placeholder="Password Confirm"
+              {...register('passwordConfirm')}
+            />
+            <label htmlFor="floatingPasswordConfirm">Password Confirm</label>
+            {errors.passwordConfirm?.message && (
+              <div className="invalid-feedback">
+                {errors.passwordConfirm.message}
+              </div>
+            )}
+          </div>
 
-        <button className="w-100 btn btn-lg btn-primary" type="submit">
-          Submit
-        </button>
-      </form>
-    </main>
+          <button className="w-100 btn btn-lg btn-primary" type="submit">
+            Submit
+          </button>
+        </form>
+      </main>
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import type { RegistFormBody } from '../service/api/type';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { Helmet } from 'react-helmet-async';
 
 const registerFormSchema = z
   .object({
@@ -62,98 +63,103 @@ const Register: FC = () => {
   };
 
   return (
-    <main className="form-signin">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <h1 className="h3 mb-3 fw-normal">Please Register</h1>
+    <>
+      <Helmet>
+        <title>Sample | Register</title>
+      </Helmet>
+      <main className="form-signin">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <h1 className="h3 mb-3 fw-normal">Please Register</h1>
 
-        <div className="form-floating mb-2">
-          <input
-            type="text"
-            className={
-              errors.firstName ? 'form-control is-invalid' : 'form-control'
-            }
-            id="floatingFirstName"
-            placeholder="First Name"
-            {...register('firstName')}
-          />
-          <label htmlFor="floatingFirstName">First Name</label>
-          {errors.firstName?.message && (
-            <div className="invalid-feedback">{errors.firstName.message}</div>
-          )}
-        </div>
+          <div className="form-floating mb-2">
+            <input
+              type="text"
+              className={
+                errors.firstName ? 'form-control is-invalid' : 'form-control'
+              }
+              id="floatingFirstName"
+              placeholder="First Name"
+              {...register('firstName')}
+            />
+            <label htmlFor="floatingFirstName">First Name</label>
+            {errors.firstName?.message && (
+              <div className="invalid-feedback">{errors.firstName.message}</div>
+            )}
+          </div>
 
-        <div className="form-floating mb-2">
-          <input
-            type="text"
-            className={
-              errors.lastName ? 'form-control is-invalid' : 'form-control'
-            }
-            id="floatingLastName"
-            placeholder="Last Name"
-            {...register('lastName')}
-          />
-          <label htmlFor="floatingFirstName">Last Name</label>
-          {errors.lastName?.message && (
-            <div className="invalid-feedback">{errors.lastName.message}</div>
-          )}
-        </div>
+          <div className="form-floating mb-2">
+            <input
+              type="text"
+              className={
+                errors.lastName ? 'form-control is-invalid' : 'form-control'
+              }
+              id="floatingLastName"
+              placeholder="Last Name"
+              {...register('lastName')}
+            />
+            <label htmlFor="floatingFirstName">Last Name</label>
+            {errors.lastName?.message && (
+              <div className="invalid-feedback">{errors.lastName.message}</div>
+            )}
+          </div>
 
-        <div className="form-floating mb-2">
-          <input
-            type="email"
-            className={
-              errors.email ? 'form-control is-invalid' : 'form-control'
-            }
-            id="floatingInput"
-            placeholder="name@example.com"
-            {...register('email')}
-          />
-          <label htmlFor="floatingInput">Email address</label>
-          {errors.email?.message && (
-            <div className="invalid-feedback">{errors.email.message}</div>
-          )}
-        </div>
+          <div className="form-floating mb-2">
+            <input
+              type="email"
+              className={
+                errors.email ? 'form-control is-invalid' : 'form-control'
+              }
+              id="floatingInput"
+              placeholder="name@example.com"
+              {...register('email')}
+            />
+            <label htmlFor="floatingInput">Email address</label>
+            {errors.email?.message && (
+              <div className="invalid-feedback">{errors.email.message}</div>
+            )}
+          </div>
 
-        <div className="form-floating mb-2">
-          <input
-            type="password"
-            className={
-              errors.password ? 'form-control is-invalid' : 'form-control'
-            }
-            id="floatingPassword"
-            placeholder="Password"
-            {...register('password')}
-          />
-          <label htmlFor="floatingPassword">Password</label>
-          {errors.password?.message && (
-            <div className="invalid-feedback">{errors.password.message}</div>
-          )}
-        </div>
-        <div className="form-floating mb-3">
-          <input
-            type="password"
-            className={
-              errors.passwordConfirm
-                ? 'form-control is-invalid'
-                : 'form-control'
-            }
-            id="floatingPasswordConfirm"
-            placeholder="Password Confirm"
-            {...register('passwordConfirm')}
-          />
-          <label htmlFor="floatingPasswordConfirm">Password Confirm</label>
-          {errors.passwordConfirm?.message && (
-            <div className="invalid-feedback">
-              {errors.passwordConfirm.message}
-            </div>
-          )}
-        </div>
+          <div className="form-floating mb-2">
+            <input
+              type="password"
+              className={
+                errors.password ? 'form-control is-invalid' : 'form-control'
+              }
+              id="floatingPassword"
+              placeholder="Password"
+              {...register('password')}
+            />
+            <label htmlFor="floatingPassword">Password</label>
+            {errors.password?.message && (
+              <div className="invalid-feedback">{errors.password.message}</div>
+            )}
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className={
+                errors.passwordConfirm
+                  ? 'form-control is-invalid'
+                  : 'form-control'
+              }
+              id="floatingPasswordConfirm"
+              placeholder="Password Confirm"
+              {...register('passwordConfirm')}
+            />
+            <label htmlFor="floatingPasswordConfirm">Password Confirm</label>
+            {errors.passwordConfirm?.message && (
+              <div className="invalid-feedback">
+                {errors.passwordConfirm.message}
+              </div>
+            )}
+          </div>
 
-        <button className="w-100 btn btn-lg btn-primary" type="submit">
-          Submit
-        </button>
-      </form>
-    </main>
+          <button className="w-100 btn btn-lg btn-primary" type="submit">
+            Submit
+          </button>
+        </form>
+      </main>
+    </>
   );
 };
 

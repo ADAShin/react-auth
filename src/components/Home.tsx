@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getAuthValue, setAuth } from '../redux/auth/authSlice';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAuthUser } from '../service/api/auth';
+import { Helmet } from 'react-helmet-async';
 
 const Home: FC = () => {
   console.log('Home');
@@ -39,11 +40,16 @@ const Home: FC = () => {
   }
 
   return (
-    <h3 className="container mt-5 text-center">
-      {auth
-        ? `Hi ${user?.first_name} ${user?.last_name}`
-        : 'You are not authenticated'}
-    </h3>
+    <>
+      <Helmet>
+        <title>Sample | Home</title>
+      </Helmet>
+      <h3 className="container mt-5 text-center">
+        {auth
+          ? `Hi ${user?.first_name} ${user?.last_name}`
+          : 'You are not authenticated'}
+      </h3>
+    </>
   );
 };
 
