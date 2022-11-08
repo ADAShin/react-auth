@@ -1,4 +1,4 @@
-import type { FC, SyntheticEvent, ReactElement } from 'react';
+import type { FC, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/hooks';
@@ -8,6 +8,18 @@ import { useMutation } from '@tanstack/react-query';
 import type { LoginData, TwoFactorAuthBody } from '../../service/api/type';
 import { twoFactorAuth } from '../../service/api/auth';
 import apiClient from '../../service/api/apiClient';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+
+const tfaAuthSchema = z.object({
+  code: z
+    .string()
+    .min(1, { message: '必須入力です' })
+    .regex(/^\d{6}$/, { message: '6桁の数値を入力してください' }),
+});
+
+type TfaAuthSchema = z.infer<typeof tfaAuthSchema>;
 
 type Props = {
   loginData: LoginData;
@@ -16,6 +28,14 @@ type Props = {
 const AuthenticatorForm: FC<Props> = ({
   loginData: { id, secret, otpauth_url },
 }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, isValid },
+  } = useForm<TfaAuthSchema>({
+    resolver: zodResolver(tfaAuthSchema),
+  });
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const twoFactorAuthMutate = useMutation({
@@ -30,7 +50,7 @@ const AuthenticatorForm: FC<Props> = ({
       alert(err);
     },
   });
-  const [code, setCode] = useState('');
+
   const [img, setImg] = useState<ReactElement | null>(null);
 
   useEffect(() => {
@@ -43,14 +63,13 @@ const AuthenticatorForm: FC<Props> = ({
     }
   }, [otpauth_url]);
 
-  const submit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    twoFactorAuthMutate.mutate({ id, secret, code });
+  const onSubmit: SubmitHandler<TfaAuthSchema> = (data) => {
+    twoFactorAuthMutate.mutate({ id, secret, code: data.code });
   };
 
   return (
     <>
-      <form onSubmit={submit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <h1 className="h3 mb-3 fw-normal">
           Please insert your authenticator code
         </h1>
@@ -58,15 +77,22 @@ const AuthenticatorForm: FC<Props> = ({
         <div className="form-floating">
           <input
             type="text"
-            className="form-control"
+            className={errors.code ? 'form-control is-invalid' : 'form-control'}
             id="floatingInput"
             placeholder="name@example.com"
-            onChange={(e) => setCode(e.target.value)}
+            {...register('code')}
           />
           <label htmlFor="floatingInput">6 digit code</label>
+          {errors.code?.message && (
+            <div className="invalid-feedback">{errors.code?.message}</div>
+          )}
         </div>
 
-        <button className="mt-3 w-100 btn btn-lg btn-primary" type="submit">
+        <button
+          className="mt-3 w-100 btn btn-lg btn-primary"
+          type="submit"
+          disabled={!isDirty || !isValid}
+        >
           Sign in
         </button>
       </form>
