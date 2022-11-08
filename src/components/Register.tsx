@@ -36,7 +36,7 @@ const Register: FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
   } = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
   });
@@ -154,7 +154,11 @@ const Register: FC = () => {
             )}
           </div>
 
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
+          <button
+            className="w-100 btn btn-lg btn-primary"
+            type="submit"
+            disabled={!isDirty || !isValid}
+          >
             Submit
           </button>
         </form>
