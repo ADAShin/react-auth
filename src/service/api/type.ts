@@ -31,3 +31,8 @@ export type RegistFormBody = {
   password: string;
   password_confirm: string;
 };
+
+export type ResetPasswordBody = Pick<
+  RegistFormBody,
+  'password' | 'password_confirm'
+> & { token: string };

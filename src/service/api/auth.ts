@@ -3,6 +3,7 @@ import apiClient from './apiClient';
 import type {
   LoginData,
   LoginFormBody,
+  ResetPasswordBody,
   TwoFactorAuthBody,
   UserInfo,
 } from './type';
@@ -28,4 +29,8 @@ export const fetchAuthUser = async () => {
 
 export const logout = async () => {
   await apiClient.post<{ message: string }>('logout');
+};
+
+export const resetPassword = async (body: ResetPasswordBody) => {
+  await apiClient.post<any, any, ResetPasswordBody>('reset', body);
 };

@@ -1,10 +1,10 @@
 import type { FC } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import apiClient from '../service/api/apiClient';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Helmet } from 'react-helmet-async';
+import { resetPassword } from '../service/api/auth';
 
 const resetPasswordFormSchema = z
   .object({
@@ -27,7 +27,7 @@ const Reset: FC = () => {
     resolver: zodResolver(resetPasswordFormSchema),
   });
 
-  const { token } = useParams();
+  const { token = '' } = useParams();
   const navigate = useNavigate();
 
   console.log(token);
@@ -35,15 +35,7 @@ const Reset: FC = () => {
   const onSubmit: SubmitHandler<ResetPasswordFormSchema> = async (data) => {
     const { password, passwordConfirm: password_confirm } = data;
     try {
-      await apiClient.post<
-        any,
-        any,
-        { password: string; password_confirm: string; token?: string }
-      >('reset', {
-        password,
-        password_confirm,
-        token,
-      });
+      await resetPassword({ password, password_confirm, token });
       navigate('/login');
     } catch (e) {
       alert(e);
