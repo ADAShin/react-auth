@@ -1,15 +1,15 @@
 import type { FC } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getAuthValue, setAuth } from '../redux/auth/authSlice';
+import { logout as apiLogout } from '../service/api/auth';
 
 const Nav: FC = () => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector(getAuthValue);
 
   const logout = async () => {
-    await axios.post<{ message: string }>('logout');
+    await apiLogout();
     dispatch(setAuth(false));
   };
 

@@ -1,11 +1,13 @@
 import type { FC, SyntheticEvent, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoginData } from './Login';
-import axios from 'axios';
 import { useAppDispatch } from '../../redux/hooks';
 import { setAuth } from '../../redux/auth/authSlice';
 import qrcode from 'qrcode';
+import { useMutation } from '@tanstack/react-query';
+import type { LoginData, TwoFactorAuthBody } from '../../service/api/type';
+import { twoFactorAuth } from '../../service/api/auth';
+import apiClient from '../../service/api/apiClient';
 
 type Props = {
   loginData: LoginData;
@@ -16,6 +18,18 @@ const AuthenticatorForm: FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const twoFactorAuthMutate = useMutation({
+    mutationFn: (val: TwoFactorAuthBody) => twoFactorAuth(val),
+    onSuccess: (token) => {
+      // アクセストークンBearerトークンとしてAuthorizationヘッダーに追加
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      dispatch(setAuth(true));
+      navigate('/');
+    },
+    onError: (err) => {
+      alert(err);
+    },
+  });
   const [code, setCode] = useState('');
   const [img, setImg] = useState<ReactElement | null>(null);
 
@@ -31,19 +45,7 @@ const AuthenticatorForm: FC<Props> = ({
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post<{ token: string }>('two-factor', {
-        id,
-        secret,
-        code,
-      });
-      // アクセストークンBearerトークンとしてAuthorizationヘッダーに追加
-      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      dispatch(setAuth(true));
-      navigate('/');
-    } catch (e) {
-      alert(e);
-    }
+    twoFactorAuthMutate.mutate({ id, secret, code });
   };
 
   return (

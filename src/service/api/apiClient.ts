@@ -2,25 +2,27 @@ import axios from 'axios';
 // import { setAuth } from '../redux/auth/authSlice';
 // import { store } from '../redux/store';
 
-axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
-axios.defaults.withCredentials = true;
+const apiClient = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+  withCredentials: true,
+});
 
 let refresh = false;
 
-axios.interceptors.response.use(
+apiClient.interceptors.response.use(
   (res) => res,
   async (error) => {
     if (error.response?.status === 401 && !refresh) {
       // リフレッシュトークン取得
       refresh = true;
-      const response = await axios.post<{ token: string }>('refresh');
+      const response = await apiClient.post<{ token: string }>('refresh');
       if (response.status === 200) {
         console.log('get new access token: ', response.data.token);
-        axios.defaults.headers.common[
+        apiClient.defaults.headers.common[
           'Authorization'
         ] = `Bearer ${response.data.token}`;
         try {
-          const res = await axios.request({
+          const res = await apiClient.request({
             ...error.config,
             headers: { Authorization: `Bearer ${response.data.token}` },
           });
@@ -35,3 +37,5 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export default apiClient;

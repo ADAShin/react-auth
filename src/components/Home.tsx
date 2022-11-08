@@ -1,38 +1,48 @@
-import { FC, useEffect } from 'react';
-import { useState } from 'react';
-import axios from 'axios';
+import type { FC } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getAuthValue, setAuth } from '../redux/auth/authSlice';
-
-type UserInfo = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+import { useQuery } from '@tanstack/react-query';
+import { fetchAuthUser } from '../service/api/auth';
 
 const Home: FC = () => {
-  const dispatch = useAppDispatch();
+  console.log('Home');
   const auth = useAppSelector(getAuthValue);
-  const [message, setMessage] = useState('You are not authenticated');
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const userInfo = async () => {
-      try {
-        const res = await axios.get<UserInfo>('user');
-        const user = res.data;
-        setMessage(`Hi ${user.first_name} ${user.last_name}`);
-        dispatch(setAuth(true));
-      } catch (e) {
-        dispatch(setAuth(false));
-      }
-    };
-    void userInfo();
-  }, [dispatch]);
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['auth-user'],
+    queryFn: fetchAuthUser,
+    retry: 1,
+    onSuccess: () => {
+      dispatch(setAuth(true));
+    },
+    onError: () => {
+      dispatch(setAuth(false));
+    },
+    //enabled: auth,
+    suspense: false,
+  });
+
+  if (isLoading) {
+    return <h3 className="container mt-5 text-center">Loading...</h3>;
+  }
+
+  if (isError) {
+    console.log('error');
+    return (
+      <h3 className="container mt-5 text-center">You are not authenticated</h3>
+    );
+  }
 
   return (
     <h3 className="container mt-5 text-center">
-      {auth ? message : 'You are not authenticated'}
+      {auth
+        ? `Hi ${user?.first_name} ${user?.last_name}`
+        : 'You are not authenticated'}
     </h3>
   );
 };

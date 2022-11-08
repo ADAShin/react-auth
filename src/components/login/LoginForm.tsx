@@ -1,39 +1,30 @@
 import type { FC, SyntheticEvent } from 'react';
 import { useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
 import { Link } from 'react-router-dom';
-import { LoginData } from './Login';
-
-type LoginFormResponse = LoginData;
-
-type LoginFormBody = {
-  email: string;
-  password: string;
-};
+import { useMutation } from '@tanstack/react-query';
+import type { LoginData, LoginFormBody } from '../../service/api/type';
+import { login } from '../../service/api/auth';
 
 type Props = {
-  loginData: (data: LoginFormResponse) => void;
+  loginData: (data: LoginData) => void;
 };
 
 const LoginForm: FC<Props> = ({ loginData }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const loginMutation = useMutation({
+    mutationFn: (val: LoginFormBody) => login(val),
+    onSuccess: (data) => {
+      loginData(data);
+    },
+    onError: (err) => {
+      alert(err);
+    },
+  });
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post<
-        LoginFormResponse,
-        AxiosResponse<LoginFormResponse, any>,
-        LoginFormBody
-      >('login', {
-        email,
-        password,
-      });
-      loginData(data);
-    } catch (e) {
-      alert(e);
-    }
+    loginMutation.mutate({ email, password });
   };
 
   return (

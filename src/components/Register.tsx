@@ -1,19 +1,9 @@
 import type { FC, SyntheticEvent } from 'react';
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-type RegistFormResponse = {
-  message: string;
-};
-
-type RegistFormBody = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  password_confirm: string;
-};
+import { useMutation } from '@tanstack/react-query';
+import { registerUser } from '../service/api/register';
+import type { RegistFormBody } from '../service/api/type';
 
 const Register: FC = () => {
   const [firstName, setFirstName] = useState('');
@@ -22,21 +12,21 @@ const Register: FC = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const navigate = useNavigate();
+  const registerMutate = useMutation({
+    mutationFn: (val: RegistFormBody) => registerUser(val),
+    onSuccess: () => navigate('/login'),
+    onError: (err) => alert(err),
+  });
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await axios.post<RegistFormResponse, any, RegistFormBody>('register', {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password,
-        password_confirm: passwordConfirm,
-      });
-      navigate('/login');
-    } catch (e) {
-      alert(e);
-    }
+    registerMutate.mutate({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      password,
+      password_confirm: passwordConfirm,
+    });
   };
 
   return (
@@ -49,7 +39,7 @@ const Register: FC = () => {
             type="text"
             className="form-control"
             id="floatingFirstName"
-            placeholder="もとはる"
+            placeholder="First Name"
             onChange={(e) => setFirstName(e.target.value)}
           />
           <label htmlFor="floatingFirstName">First Name</label>
@@ -60,7 +50,7 @@ const Register: FC = () => {
             type="text"
             className="form-control"
             id="floatingLastName"
-            placeholder="さの"
+            placeholder="Last Name"
             onChange={(e) => setLastName(e.target.value)}
           />
           <label htmlFor="floatingFirstName">Last Name</label>
