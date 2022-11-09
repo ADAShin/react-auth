@@ -1,5 +1,6 @@
-import type { FC } from 'react';
+import { FC, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import Forgot from './components/Forgot';
 import Home from './components/Home';
 import Login from './components/login/Login';
@@ -14,7 +15,23 @@ import { useAppSelector } from './redux/hooks';
 const Router: FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route
+        path="/"
+        element={
+          <ErrorBoundary
+            fallback={<h3 className="container mt-5 text-center">Error</h3>}
+          >
+            <Suspense
+              fallback={
+                <h3 className="container mt-5 text-center">Loading...</h3>
+              }
+            >
+              <Home />
+            </Suspense>
+          </ErrorBoundary>
+        }
+      />
+      {/* <Route path="/" element={<Home />} /> */}
       <Route element={<PrivateRoute />}>
         <Route path="/private1" element={<Private1 />} />
         <Route path="/private2" element={<Private2 />} />
@@ -33,7 +50,17 @@ const Router: FC = () => {
 const PrivateRoute = () => {
   const auth = useAppSelector(getAuthValue);
   if (auth) {
-    return <Outlet />;
+    return (
+      <ErrorBoundary
+        fallback={<h3 className="container mt-5 text-center">Error</h3>}
+      >
+        <Suspense
+          fallback={<h3 className="container mt-5 text-center">Loading...</h3>}
+        >
+          <Outlet />
+        </Suspense>
+      </ErrorBoundary>
+    );
   }
   return <Navigate to="/login" />;
 };

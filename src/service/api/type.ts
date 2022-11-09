@@ -36,3 +36,17 @@ export type ResetPasswordBody = Pick<
   RegistFormBody,
   'password' | 'password_confirm'
 > & { token: string };
+
+export type PlaceHolderUser = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+};
+
+export type PlaceHolderTodo = {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+};

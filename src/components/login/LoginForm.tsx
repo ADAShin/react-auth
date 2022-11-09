@@ -40,7 +40,6 @@ const LoginForm: FC<Props> = ({ loginData }) => {
   });
 
   const onSubmit: SubmitHandler<LoginFormSchema> = (data) => {
-    console.log(data);
     loginMutation.mutate(data);
   };
 

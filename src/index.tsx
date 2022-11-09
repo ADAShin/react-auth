@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -11,7 +11,7 @@ import { HelmetProvider } from 'react-helmet-async';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: false,
+      suspense: true,
       retry: false,
       refetchOnWindowFocus: false,
     },
@@ -26,7 +26,9 @@ root.render(
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
-          <App />
+          <Suspense fallback={<h3>Loading...</h3>}>
+            <App />
+          </Suspense>
         </Provider>
       </QueryClientProvider>
     </HelmetProvider>

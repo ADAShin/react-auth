@@ -6,38 +6,23 @@ import { fetchAuthUser } from '../service/api/auth';
 import { Helmet } from 'react-helmet-async';
 
 const Home: FC = () => {
-  console.log('Home');
   const auth = useAppSelector(getAuthValue);
   const dispatch = useAppDispatch();
 
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: user } = useQuery({
     queryKey: ['auth-user'],
     queryFn: fetchAuthUser,
     retry: 1,
+    retryDelay: 200,
     onSuccess: () => {
       dispatch(setAuth(true));
     },
     onError: () => {
-      dispatch(setAuth(false));
+      console.log('HomeでuseQueryのエラー');
     },
-    //enabled: auth,
-    suspense: false,
+    suspense: true,
+    enabled: auth,
   });
-
-  if (isLoading) {
-    return <h3 className="container mt-5 text-center">Loading...</h3>;
-  }
-
-  if (isError) {
-    console.log('error');
-    return (
-      <h3 className="container mt-5 text-center">You are not authenticated</h3>
-    );
-  }
 
   return (
     <>

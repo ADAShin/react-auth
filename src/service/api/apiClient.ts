@@ -1,6 +1,6 @@
 import axios from 'axios';
-// import { setAuth } from '../redux/auth/authSlice';
-// import { store } from '../redux/store';
+import { setAuth } from '../../redux/auth/authSlice';
+import { store } from '../../redux/store';
 
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
           });
           return res;
         } catch (e) {
-          //store.dispatch(setAuth(false));
+          store.dispatch(setAuth(false));
           return Promise.reject(e);
         }
       }
