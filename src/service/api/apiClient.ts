@@ -13,24 +13,22 @@ apiClient.interceptors.response.use(
   (res) => res,
   async (error) => {
     if (error.response?.status === 401 && !refresh) {
-      // リフレッシュトークン取得
-      refresh = true;
-      const response = await apiClient.post<{ token: string }>('refresh');
-      if (response.status === 200) {
-        console.log('get new access token: ', response.data.token);
-        apiClient.defaults.headers.common[
-          'Authorization'
-        ] = `Bearer ${response.data.token}`;
-        try {
-          const res = await apiClient.request({
-            ...error.config,
-            headers: { Authorization: `Bearer ${response.data.token}` },
-          });
-          return res;
-        } catch (e) {
-          store.dispatch(setAuth(false));
-          return Promise.reject(e);
-        }
+      try {
+        // リフレッシュトークン取得
+        refresh = true;
+        const {
+          data: { token },
+        } = await apiClient.post<{ token: string }>('refresh');
+        console.debug('get new access token: ', token);
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        return await apiClient.request({
+          ...error.config,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (err) {
+        console.debug('interceptor refresh flow: ', err);
+        store.dispatch(setAuth(false));
+        return Promise.reject(err);
       }
     }
     refresh = false;
