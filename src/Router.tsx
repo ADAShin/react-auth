@@ -11,6 +11,7 @@ import Register from './components/Register';
 import Reset from './components/Reset';
 import { getAuthValue } from './redux/auth/authSlice';
 import { useAppSelector } from './redux/hooks';
+import ErrorFallback from './components/ErrorFallback';
 
 const Router: FC = () => {
   return (
@@ -18,9 +19,7 @@ const Router: FC = () => {
       <Route
         path="/"
         element={
-          <ErrorBoundary
-            fallback={<h3 className="container mt-5 text-center">Error</h3>}
-          >
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Suspense
               fallback={
                 <h3 className="container mt-5 text-center">Loading...</h3>
@@ -51,9 +50,7 @@ const PrivateRoute = () => {
   const auth = useAppSelector(getAuthValue);
   if (auth) {
     return (
-      <ErrorBoundary
-        fallback={<h3 className="container mt-5 text-center">Error</h3>}
-      >
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense
           fallback={<h3 className="container mt-5 text-center">Loading...</h3>}
         >

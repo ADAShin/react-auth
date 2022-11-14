@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ApiAuthError from '../../errors/ApiAuthError';
 import { setAuth } from '../../redux/auth/authSlice';
 import { store } from '../../redux/store';
 
@@ -25,10 +26,14 @@ apiClient.interceptors.response.use(
           ...error.config,
           headers: { Authorization: `Bearer ${token}` },
         });
-      } catch (err) {
+      } catch (err: any) {
         console.debug('interceptor refresh flow: ', err);
+        if (err.response?.status !== 401) {
+          return Promise.reject(err);
+        }
+        const authError = new ApiAuthError(err.message || '401 Not Authorized');
         store.dispatch(setAuth(false));
-        return Promise.reject(err);
+        return Promise.reject(authError);
       }
     }
     refresh = false;
