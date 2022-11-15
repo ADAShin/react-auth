@@ -29,7 +29,10 @@ const Home: FC = () => {
       <Helmet>
         <title>Sample | Home</title>
       </Helmet>
-      <h3 className="container mt-5 text-center">
+      <h3
+        className="container mt-5 text-center"
+        data-testid={auth ? 'auth-user' : 'not-auth'}
+      >
         {auth
           ? `Hi ${user?.first_name} ${user?.last_name}`
           : 'You are not authenticated'}
